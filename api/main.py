@@ -87,11 +87,13 @@ def get_policy_features(request: PolicyFeaturesRequest):
     response_model=ValidatePolicyResponse,
 )
 def validate_odrl_policy(request: ValidatePolicyRequest):
+
     policy_text = (
         request.policy
         if isinstance(request.policy, str)
         else json.dumps(request.policy)
     )
+    # print log
     print(
         json.dumps({
             "event": "validate_odrl_policy.input",
@@ -102,6 +104,8 @@ def validate_odrl_policy(request: ValidatePolicyRequest):
 
     policy_path = None
     try:
+        # creates a temporary .jsonld file and writes the ODRL policy into it.
+
         with tempfile.NamedTemporaryFile(
             suffix=".jsonld",
             delete=False,
@@ -147,5 +151,6 @@ def validate_odrl_policy(request: ValidatePolicyRequest):
             detail=detail,
         ) from exc
     finally:
+        # The endpoint later deletes it in the finally block
         if policy_path and os.path.exists(policy_path):
             os.remove(policy_path)
