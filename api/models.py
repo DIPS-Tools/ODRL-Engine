@@ -160,3 +160,41 @@ class PolicyFeaturesResponse(BaseModel):
             "Each feature is defined by its IRI and provides an indication of its expected datatype."
         )
     )
+
+
+class ValidatePolicyRequest(BaseModel):
+    policy: dict[str, Any] | str = Field(
+        description=(
+            "An ODRL policy supplied as a JSON-LD object or as a string containing "
+            "a supported RDF serialization."
+        )
+    )
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "examples": [
+                {
+                    "policy": {
+                        "@context": "http://www.w3.org/ns/odrl.jsonld",
+                        "@type": "Policy",
+                        "uid": "urn:example:policy:1",
+                        "permission": [
+                            {
+                                "action": "reproduce",
+                                "target": "urn:example:asset:document"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    )
+
+
+class ValidatePolicyResponse(BaseModel):
+    valid: bool = Field(
+        description="True when the policy conforms to the ODRL SHACL shapes."
+    )
+    diagnostic_report: str = Field(
+        description="A human-readable ODRL validation report."
+    )
